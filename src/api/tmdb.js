@@ -18,8 +18,11 @@ export async function getJSON(path, params = {}) {
   // TODO ขั้นที่ 1: ส่ง request ด้วย fetch(url) แล้วรอคำตอบ
   //   ถ้า res.ok ไม่จริง ให้ throw new Error พร้อมเลข status
   //   ถ้าจริง ให้คืน res.json() (อย่าลืมว่าเป็น Promise ต้อง await หรือ return ตรง ๆ)
-  throw new Error('ยังไม่ได้เขียนส่วน fetch ใน getJSON (ขั้นที่ 1)');
-}
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`TMDB ตอบกลับ ${res.status}`);
+  }
+  return res.json();}
 
 // แปลง JSON ของ TMDB ให้เป็นรูปร่างเดียวกับ data.js เพื่อให้ MovieCard ใช้ได้ทันที
 // genreMap คือตาราง { 28: 'แอ็คชั่น', 16: 'แอนิเมชัน', ... } เพราะรายการหนังให้มาแค่รหัสแนว (genre_ids)
@@ -34,7 +37,17 @@ export function toMovie(m, genreMap = {}) {
   //   rating            m.vote_average ปัดเป็นทศนิยม 1 ตำแหน่ง
   //   detail            m.overview ถ้าว่างให้ใส่ข้อความแทน
   //   poster            IMG + m.poster_path ถ้าไม่มีให้เป็น null
-  return m;   // ชั่วคราว: ส่งกลับตามเดิม การ์ดจะขึ้นไม่ครบเพราะชื่อ field ไม่ตรง
+  return {
+    id: m.id,
+    tmdbId: m.id,
+    title: m.title,
+    titleTh: null,
+    genre: m.genres?.[0]?.name ?? genreMap[m.genre_ids?.[0]] ?? null,
+    year: m.release_date ? Number(m.release_date.slice(0, 4)) : null,
+    rating: m.vote_average ? Math.round(m.vote_average * 10) / 10 : null,
+    detail: m.overview || 'ยังไม่มีเรื่องย่อภาษาไทย',
+    poster: m.poster_path ? IMG + m.poster_path : null,
+  };   // ชั่วคราว: ส่งกลับตามเดิม การ์ดจะขึ้นไม่ครบเพราะชื่อ field ไม่ตรง
 }
 
 // ตารางแปลงรหัสแนวหนังเป็นชื่อ (โหลดครั้งเดียวต่อการเรียก getNowPlaying)

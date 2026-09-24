@@ -1,6 +1,7 @@
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ReviewForm from '../components/ReviewForm';
-import { movies } from '../data/data';
+import { getMovie } from '../api/tmdb';
 // TODO ขั้นที่ 4: import { useEffect, useState } from 'react';
 // TODO ขั้นที่ 4: import { getMovie } from '../api/tmdb';
 
@@ -8,9 +9,32 @@ function MovieDetail() {
   const { id } = useParams();                       // ได้เป็น string เสมอ
 
   // TODO ขั้นที่ 4: เปลี่ยนเป็น state 3 ตัว (movie, status, error) แล้วโหลดด้วย getMovie(id) ใน useEffect
-  const movie = movies.find(m => m.id === Number(id));
-  const status = movie ? 'success' : 'error';
-  const error = movie ? null : new Error('ไม่มีเรื่องนี้ใน data.js');
+  const [movie, setMovie] = useState(null);
+  const [status, setStatus] = useState('loading');
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+  let ignore = false;
+
+  async function load() {
+    setStatus('loading');
+    try {
+      const m = await getMovie(id);
+      if (!ignore) {
+        setMovie(m);
+        setStatus('success');
+      }
+    } catch (err) {
+      if (!ignore) {
+        setError(err);
+        setStatus('error');
+      }
+    }
+  }
+  load();
+
+  return () => { ignore = true; };
+}, [id]);
 
   if (status === 'loading') {
     return (
