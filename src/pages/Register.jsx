@@ -7,13 +7,21 @@ function Register() {
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
   const [error, setError] = useState(null);
   const [status, setStatus] = useState('typing');
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  // ใช้โชว์เตือนตอนพิมพ์ (ไม่เตือนถ้าช่องยืนยันยังว่าง)
+  const mismatch = confirm !== '' && password !== confirm;
+
   async function handleSubmit(e) {
     e.preventDefault();
+    if (password !== confirm) {
+      setError('รหัสผ่านสองช่องไม่ตรงกัน');
+      return;                                      // ไม่ส่งไป server
+    }
     setStatus('submitting');
     setError(null);
     try {
@@ -34,7 +42,9 @@ function Register() {
         <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="ชื่อที่แสดง" required className={input} />
         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="อีเมล" required className={input} />
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="รหัสผ่าน (4 ตัวขึ้นไป)" required minLength={4} className={input} />
-        <button type="submit" disabled={status === 'submitting'}
+        <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="ยืนยันรหัสผ่าน" required className={input} />
+        {mismatch && <p className="text-sm text-red-600">รหัสผ่านสองช่องไม่ตรงกัน</p>}
+        <button type="submit" disabled={status === 'submitting' || mismatch}
                 className="w-full rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 disabled:bg-slate-300">
           {status === 'submitting' ? 'กำลังสมัคร...' : 'สมัครสมาชิก'}
         </button>
