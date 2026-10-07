@@ -97,7 +97,7 @@ app.get('/api/movies/:id/reviews', (req, res) => {
       const m = db.members.find(x => x.id === r.memberId);
       const v = db.votes.find(x => x.memberId === r.memberId && x.movieId === movieId);
       return { id: r.id, text: r.text, createdAt: r.createdAt, updatedAt: r.updatedAt,
-               member: { id: m.id, displayName: m.displayName }, score: v ? v.score : null };
+              member: { id: m.id, displayName: m.displayName }, score: v ? v.score : null };
     });
   res.json({ items });
 });

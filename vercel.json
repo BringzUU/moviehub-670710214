@@ -1,3 +1,6 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://moviehub-670710214.vercel.app/" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
