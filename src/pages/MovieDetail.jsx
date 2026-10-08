@@ -87,7 +87,7 @@ function MovieDetail() {
       <div className="mt-4 flex flex-col gap-8 md:flex-row">
         {movie.poster ? (
           <img src={movie.poster} alt={`โปสเตอร์ ${movie.title}`}
-              className="w-48 shrink-0 self-start rounded-xl border border-slate-200" />
+            className="w-48 shrink-0 self-start rounded-xl border border-slate-200" />
         ) : (
           <div className="grid aspect-[2/3] w-48 shrink-0 place-items-center rounded-xl bg-slate-100 text-5xl">🎬</div>
         )}
